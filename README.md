@@ -9,7 +9,7 @@ Visit https://github.com/babashka/babashka#installation for installation instruc
 
 ### Alternative runtimes
 
-You could, in theory, leverage any Clojure runtime of choice - so long as you're able to satisfy the dependencies. The only package outside of the standard library is (babashka/process)[https://github.com/babashka/process].
+You could, in theory, leverage any Clojure runtime of choice - so long as you're able to satisfy the dependencies. The only package outside of the standard library is [babashka/process](https://github.com/babashka/process).
 
 ## Basic usage
 
