@@ -53,16 +53,12 @@
   (mapv keyword (split arg #":")))
 
 (comment
-  (with-redefs [tasks {:1-1 "1-1"
-                       :1-2 {:2-1 "2-1"
-                             :2-2 "2-2"
-                             :2-3 {:3-1 "3-1"}
-                             :2-4 "2-4"}}]
+  (with-redefs [tasks (edn/read-string (slurp "runner.example.edn"))]
     [(get-tasks [(decode-path "1-2:2-2")])
      (get-tasks [[:1-2 :2-2]])
-     (get-tasks [[:1-2]]) ;; entire section, depth-first
+     (get-tasks [[:1-2]]) ; entire section, depth-first
      (get-tasks [])
-     (get-tasks [[]]) ;;entire thing
+     (get-tasks [[]]) ;entire thing
      ]))
 
 (defn get-actions
