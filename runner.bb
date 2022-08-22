@@ -20,7 +20,7 @@
 (def opts (parse-opts *command-line-args*
                       [[nil "--edn EDN" "Explicit runner configuration" :default nil]
                        ["-u" "--unique" "Do not repeat individual actions" :default false]
-                       ["-p" "--parallel" "Run individual tasks in parallel" :default false]
+                       ["-p" "--parallel" "Run all tasks in parallel" :default false]
                        ["-h" "--help"]]))
 
 (def tasks (or (get-in opts [:options :edn])
@@ -85,10 +85,19 @@
       (recur (t actions) ts)
       actions)))
 
-(def process-action
-  (if (get-in opts [:options :parallel])
-    #(p/process % {:inherit true :shutdown p/destroy-tree})
-    p/shell))
+(defn parallel?
+  [action]
+  (or (get-in opts [:options :parallel])
+      (get (meta action) :parallel)))
+
+(defn process-action
+  [action]
+  (let [cmd (if (string? action)
+              action
+              (s/join " " action))]
+    (if (parallel? action)
+      (p/process cmd {:inherit true :shutdown p/destroy-tree})
+      (p/shell cmd))))
 
 (defn help
   []
@@ -106,9 +115,9 @@
 (try
   (if (get-in opts [:options :help])
     (help)
-    (let [actions (-> (:arguments opts)
+    (let [actions (->> (:arguments opts)
                       get-actions
-                      flatten
+                      (reduce into [])
                       transform-actions)]
       (if (empty? actions)
         (help)
